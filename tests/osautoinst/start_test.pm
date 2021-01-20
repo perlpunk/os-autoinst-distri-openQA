@@ -13,6 +13,8 @@ last_tw_build=\$(openqa-client --host $openqa_url assets get | sed -n 's/^.*name
 echo "Last Tumbleweed build on openqa.opensuse.org: \$last_tw_build"
 [ ! -z \$last_tw_build ]
 zypper -n in jq
+client_output_debug=\$(openqa-client --host $openqa_url --json-output jobs get version=Tumbleweed scope=relevant arch=$arch build=\$last_tw_build flavor=NET latest=1)
+echo "Output: \$client_output_debug"
 job_id=\$(openqa-client --host $openqa_url --json-output jobs get version=Tumbleweed scope=relevant arch=$arch build=\$last_tw_build flavor=NET latest=1 | jq '.jobs | .[] | select(.test == "$ttest") | .id')
 echo "Job Id: \$job_id"
 [ ! -z \$job_id  ]
