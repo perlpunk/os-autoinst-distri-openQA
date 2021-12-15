@@ -81,6 +81,7 @@ sub run {
     type_string $testapi::password . "\n";
     wait_still_screen(2);
     diag('Ensure packagekit is not interfering with zypper calls');
+    die "fail on purpose";
     script_run('systemctl stop packagekit.service; systemctl mask packagekit.service');
     if (check_var('OPENQA_FROM_GIT', 1)) {
         if (get_var('OPENQA_CONTAINERS')) {
