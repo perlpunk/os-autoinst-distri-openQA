@@ -1,5 +1,5 @@
 use strict;
-use base "openQAcoretest";
+use base "basetest";
 use utils;
 
 sub run {
