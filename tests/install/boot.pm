@@ -4,6 +4,7 @@ use testapi;
 
 sub run {
     record_info 'HELLO';
+    die "oops";
     wait_for_desktop;
 }
 
