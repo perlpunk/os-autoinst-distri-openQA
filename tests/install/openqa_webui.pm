@@ -19,6 +19,7 @@ sub add_repo {
     assert_script_run('retry -e -s 30 -r 7 -- zypper -n --gpg-auto-import-keys ref', timeout => 4000);
 }
 
+
 sub install_from_pkgs {
     diag('following https://github.com/os-autoinst/openQA/blob/master/docs/Installing.asciidoc');
     my $proxy_pkg = (check_var('OPENQA_WEB_PROXY', 'nginx')) ? 'nginx' : '';
@@ -34,6 +35,10 @@ sub install_from_pkgs {
     else {
         assert_script_run 'systemctl enable apache2';
         assert_script_run 'systemctl restart apache2';
+    }
+    if (get_var('FULL_OPENSUSE_TEST')) {
+        # avoid second git fetch after fetchneedles
+        assert_script_run qq{if [ -e /etc/openqa/openqa.ini ]; then sed -i -e 's/#\[scm git\]/[scm git]\ngit_auto_clone = no/' /etc/openqa/openqa.ini; else echo -e "[scm git]\ngit_auto_clone = no" > /etc/openqa/openqa.ini.d/git.ini; fi};
     }
     assert_script_run($_) foreach (split /\n/, <<~'EOF');
     if [ -e /etc/openqa/openqa.ini ]; then sed -i -e 's/#.*method.*OpenID.*$/&\nmethod = Fake/' /etc/openqa/openqa.ini; else echo -e "[auth]\nmethod = Fake" > /etc/openqa/openqa.ini.d/auth.ini; fi
