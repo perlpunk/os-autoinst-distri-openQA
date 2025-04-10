@@ -5,7 +5,7 @@ use utils;
 sub run ($self) {
     my $api_query = get_var('FULL_MM_TEST') ? 'test=ping_client' : 'state=running state=done';
     my $success = get_var('FULL_MM_TEST') ? 'passed' : 'passed\|running';
-    assert_script_run qq{retry -s 5 -r 10 -- sh -c '
+    assert_script_run qq{retry -s 30 -r 30 -- sh -c '
         r=`openqa-cli api jobs $api_query | tee /dev/fd/2 |
         jq -r ".jobs | max_by(.id) | if .result != \\"none\\" then .result else .state end"`;
         echo \$r | grep -q "incomplete\\|failed" && killall retry;
