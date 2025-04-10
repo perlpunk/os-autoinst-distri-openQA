@@ -29,7 +29,7 @@ sub test_flags { {fatal => 1} }
 
 sub upload_openqa_logs {
     get_log 'ps -ef' => 'running_processes.txt';
-    get_log 'journalctl --pager-end --no-tail --no-pager -u apache2 -u nginx -u openqa-scheduler -u openqa-websockets -u openqa-webui -u openqa-gru -u openqa-worker@1' => 'openqa_services.log.txt';
+    get_log 'journalctl --pager-end --no-tail --no-pager -u apache2 -u nginx -u openqa-scheduler -u openqa-websockets -u openqa-webui -u openqa-gru -u openqa-worker-plain@1 -u openqa-worker-plain@2' => 'openqa_services.log.txt';
     get_log 'journalctl --pager-end --no-tail --no-pager' => 'journal.log.txt';
     my @logs = split m/\n/, script_output q{find /var/lib/openqa -name autoinst-log.txt};
     @logs and get_log "(cat @logs ||:)" => 'autoinst-log.txt';

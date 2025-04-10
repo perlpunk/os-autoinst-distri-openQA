@@ -27,11 +27,12 @@ sub post_fail_hook ($self) {
     save_screenshot;
     get_log('cat /var/log/openqa_scheduler' => 'scheduler.log.txt');
     get_log('cat /var/log/openqa_gru' => 'gru.log.txt');
-    get_log('cat /var/log/apache/error.log' => 'apache-error.log.txt');
-    get_log('cat /var/log/apache/access.log' => 'apache-access.log.txt');
+    get_log('cat /var/log/apache2/error_log' => 'apache-error.log.txt');
+    get_log('cat /var/log/apache2/access_log' => 'apache-access.log.txt');
     get_log('journalctl -u openqa-gru --since today | cat' => 'gru-journal.txt');
     get_log('journalctl -u openqa-scheduler --since today | cat' => 'scheduler-journal.txt');
-    get_log('journalctl -u openqa-webui --since today | cat' => 'scheduler-journal.txt');
+    get_log('journalctl -u openqa-webui --since today | cat' => 'webui-journal.txt');
+    get_log('find /var/log' => 'find-var-log.txt');
     get_log('grep --color -z -E "(vmx|svm)" /proc/cpuinfo' => 'cpuinfo.txt');
     assert_script_run 'grep --color -z -E "(vmx|svm)" /proc/cpuinfo', fail_message => 'Machine does not support nested virtualization, please enable in worker host';
 }
