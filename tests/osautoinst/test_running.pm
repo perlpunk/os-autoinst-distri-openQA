@@ -5,11 +5,11 @@ use utils;
 sub run ($self) {
     my $api_query = get_var('FULL_MM_TEST') ? 'test=ping_client' : 'state=running state=done';
     my $success = get_var('FULL_MM_TEST') ? 'passed' : 'passed\|running';
-    assert_script_run qq{retry -s 15 -r 120 -- sh -c '
+    assert_script_run qq{retry -s 5 -r 10 -- sh -c '
         r=`openqa-cli api jobs $api_query | tee /dev/fd/2 |
         jq -r ".jobs | max_by(.id) | if .result != \\"none\\" then .result else .state end"`;
         echo \$r | grep -q "incomplete\\|failed" && killall retry;
-        echo \$r | grep -q "$success"'}, timeout => 1830;
+        echo \$r | grep -q "$success"'}, timeout => 120;
     if (get_var('FULL_MM_TEST')) {
         # we can't upload logs if the multimachine OVS bridge in the SUT has the same IP as the openQA-worker host
         script_run 'ip a del 10.0.2.2/15 dev br1'; # This may fail in case this IP is not actually set on the bridge
@@ -25,6 +25,11 @@ sub post_fail_hook ($self) {
     $self->SUPER::post_fail_hook;
     script_run 'lsmod | grep kvm';
     save_screenshot;
+    get_log('cat /var/log/openqa_scheduler' => 'scheduler.log');
+    get_log('cat /var/log/openqa_gru' => 'gru.log');
+    get_log('cat /var/log/nginx/error.log' => 'nginx-error.log');
+    get_log('cat /var/log/nginx/access.log' => 'nginx-access.log');
+    get_log('journalctl -u openqa-gru --since today | cat' => 'gru-journal.log');
     get_log('grep --color -z -E "(vmx|svm)" /proc/cpuinfo' => 'cpuinfo.txt');
     assert_script_run 'grep --color -z -E "(vmx|svm)" /proc/cpuinfo', fail_message => 'Machine does not support nested virtualization, please enable in worker host';
 }
