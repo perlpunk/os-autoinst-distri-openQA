@@ -27,8 +27,8 @@ sub post_fail_hook ($self) {
     save_screenshot;
     get_log('cat /var/log/openqa_scheduler' => 'scheduler.log');
     get_log('cat /var/log/openqa_gru' => 'gru.log');
-    get_log('cat /var/log/nginx/error.log' => 'nginx-error.log');
-    get_log('cat /var/log/nginx/access.log' => 'nginx-access.log');
+    get_log('cat /var/log/apachw/error.log' => 'apachw-error.log');
+    get_log('cat /var/log/apachw/access.log' => 'apachw-access.log');
     get_log('journalctl -u openqa-gru --since today | cat' => 'gru-journal.log');
     get_log('grep --color -z -E "(vmx|svm)" /proc/cpuinfo' => 'cpuinfo.txt');
     assert_script_run 'grep --color -z -E "(vmx|svm)" /proc/cpuinfo', fail_message => 'Machine does not support nested virtualization, please enable in worker host';
