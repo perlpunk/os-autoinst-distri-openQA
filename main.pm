@@ -11,13 +11,13 @@ testapi::set_distribution(susedistribution->new());
 $testapi::password //= get_var('PASSWORD');
 $testapi::password //= 'nots3cr3t';
 
-sub loadtest ($test) {
+sub loadtest ($test, %args) {
     my $filename = $test =~ /\.p[my]$/ ? $test : $test . '.pm';
-    autotest::loadtest("tests/$filename");
+    autotest::loadtest("tests/$filename", %args);
 }
 
 sub load_install_tests() {
-    loadtest 'install/boot';
+    loadtest 'install/boot', name => 'boot_3.14159';
     loadtest 'install/prepare';
     loadtest 'install/openqa_webui';
     # for now when testing from git only tests the webui itself, not worker
