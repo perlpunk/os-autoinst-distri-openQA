@@ -24,13 +24,24 @@ machines:
       <<: *machine_defaults
       QEMURAM: "4096"
 
+  uefi-2G:
+    backend: qemu
+    settings:
+      <<: *machine_defaults
+      <<: &uefi_machine_defaults
+        UEFI: '1'
+        UEFI_PFLASH_CODE: /usr/share/qemu/ovmf-x86_64-ms-code.bin
+        UEFI_PFLASH_VARS: ovmf-x86_64-ms-vars-800x600.qcow2
+      QEMURAM: "2048"
+  uefi-4G:
+    backend: qemu
+    settings:
+      <<: *machine_defaults
+      <<: *uefi_machine_defaults
+      QEMURAM: "4096"
+
 .common: &common
   product: openqa-*-dev-x86_64
-  machine: 64bit-2G
-
-.common_4g: &common_4g
-  product: openqa-*-dev-x86_64
-  machine: 64bit-4G
 
 job_templates:
   openqa_from_git:
@@ -38,33 +49,36 @@ job_templates:
     settings:
       DESKTOP: minimalx
       OPENQA_FROM_GIT: "1"
-  openqa_from_containers:
+    machine: [64bit-2G,uefi-2G]
+
+  openqa_from_containers@(64bit-2G):
     <<: *common
     settings:
       DESKTOP: minimalx
       LOAD_PYTHON_TEST_MODULES: "0"
       OPENQA_CONTAINERS: "1"
       OPENQA_FROM_GIT: "1"
-  openqa_from_bootstrap:
+
+  openqa_from_bootstrap@(64bit-2G):
     <<: *common
     settings:
       DESKTOP: minimalx
       OPENQA_FROM_BOOTSTRAP: "1"
       AUTOYAST: "https://raw.githubusercontent.com/os-autoinst/openQA/master/contrib/ay-openqa-worker.xml.erb"
       VALIDATE_AUTOYAST: "1"
-  openqa_install_nginx:
+  openqa_install_nginx@(64bit-2G):
     <<: *common
     settings:
       DESKTOP: minimalx
       OPENQA_WEB_PROXY: 'nginx'
       USE_APPARMOR: "1"
-  openqa_install_multimachine:
-    <<: *common_4g
+  openqa_install_multimachine@(64bit-2G,uefi-2G):
+    <<: *common
     settings:
       DESKTOP: minimalx
       FULL_OPENSUSE_TEST: "1"
       FULL_MM_TEST: "1"
-  openqa_install+publish:
+  openqa_install+publish@(64bit-2G):
     <<: *common
     settings:
       DESKTOP: minimalx
